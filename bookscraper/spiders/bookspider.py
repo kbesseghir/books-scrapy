@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from ..items import BookItem
 
 
 class BookspiderSpider(scrapy.Spider):
@@ -32,21 +33,24 @@ class BookspiderSpider(scrapy.Spider):
 
     def parse_book_page(self,response):
         table_rows = response.css('table tr')
-        yield{
-            'url': response.url,
-            'titel':response.css('.product_main h1::text').get(),
-            'product_type':table_rows[1].css('td::text').get(),
-            'price_excl_tax':table_rows[2].css('td::text').get(),
-            'price_incl_price':table_rows[3].css('td::text').get(),
-            'tax':table_rows[4].css('td::text').get(),
-            'availibility':table_rows[5].css('td::text').get(),
-            'nmr_reviews':table_rows[6].css('td::text').get(),
-            'description':response.xpath('.//div[@id="product_description"]/following-sibling::p/text()').get(),
-            'category':response.xpath('.//ul[@class="breadcrumb"]/li[@class="active"]/preceding-sibling::li[1]/a/text()').get(),
-            'stars':response.css('p.star-rating').attrib['class'],
-            'price':response.css('p.price_color::text').get(),
+        item=BookItem()
+        item['url'] = response.url
+        item['title'] = response.css('.product_main h1::text').get()
+        item['product_type'] = table_rows[1].css('td::text').get()
+        item['price_excl_tax'] = table_rows[2].css('td::text').get()
+        item['price_incl_tax'] = table_rows[3].css('td::text').get()
+        item['tax'] = table_rows[4].css('td::text').get()
+        item['availability'] = table_rows[5].css('td::text').get()
+        item['num_reviews'] = table_rows[6].css('td::text').get()
+        item['description'] = response.xpath('.//div[@id="product_description"]/following-sibling::p/text()').get()
+        item['category'] = response.xpath('.//ul[@class="breadcrumb"]/li[@class="active"]/preceding-sibling::li[1]/a/text()').get()
+        item['stars'] = response.css('p.star-rating').attrib['class']
+        item['price'] = response.css('p.price_color::text').get()
 
-        }
+        yield item
+
+
+       
 
         
 
